@@ -1,0 +1,32 @@
+(c-include "stdio.h")
+(c-include "stdbool.h")
+(c-include "stdlib.h")
+(c-include "stdio.h")
+(c-include "unistd.h")
+(c-include "ws.h")
+
+(define-c int ws_start())
+
+(define-c int ws_get_fd(ws_connection))
+
+(define-c sexp ws_get_connections())
+
+(define-c int ws_sendframe(ws_connection (const string) unsigned-long int))
+
+(define-c int ws_sendframe_txt(ws_connection (const string)))
+
+(define-c int ws_sendframe_bin(ws_connection (const string) unsigned-long))
+
+(define-c int ws_close_client(ws_connection))
+
+(define-c string ws_getaddress(ws_connection))
+
+(define-c int ws_get_state(ws_connection))
+
+(define-c int ws_socket(sexp int int unsigned-long))
+
+(define-c-struct ws_events)
+
+(define-c-struct ws_connection 
+    (int client_sock get_sock set_sock)
+    (int state))
