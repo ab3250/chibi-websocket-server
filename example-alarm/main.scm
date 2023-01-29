@@ -2,7 +2,9 @@
     (scheme base)
     (scheme red)
     (chibi time)    
-    (websocket))
+    (websocket)
+    (alarm)
+    (chibi process))
 ;;;
 ;;;
 ;global variables
@@ -11,7 +13,8 @@
 
 (define (timer_callback)
 (display "timer from scheme")
-(ws_set_timer 0 #t))
+(newline)
+(set_timer 30000 #t))
 
 ;functions
 (define (delay sec)
@@ -56,5 +59,5 @@
     (displayln (list 'closed fd)))
 ;;;;;;
 (define (main args)
-    (ws_set_timer 1000000 #t)
+    (set_timer 10000 #t)
     (ws_start))

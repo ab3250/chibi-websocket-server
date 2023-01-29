@@ -9,6 +9,5 @@
     ws_get_state
     ws_getaddress
     ws_close_client
-    ws_set_timer
     ws_start)        	                
 (include-shared "websocket"))
