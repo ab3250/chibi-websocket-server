@@ -9,6 +9,3 @@
 ;@param fd Client file descriptor.
 
 (define-c int ws_set_timer(int bool))
-
-(define-c void timer_init(void))
-

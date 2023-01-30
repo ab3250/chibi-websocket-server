@@ -1,1 +1,1 @@
-gcc -lchibi-scheme -Wall -Wextra -O2 -I /usr/local/include -I ./include/ -std=c99 -pedantic -fPIC -pthread -shared alarm.c -o alarm.so
+gcc -lchibi-scheme -Wall -Wextra -O2 -I /usr/local/include -I ./include/ -std=c99 -pedantic -fPIC -pthread -lrt -shared alarm.c -o alarm.so

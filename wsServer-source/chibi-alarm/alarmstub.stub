@@ -8,7 +8,7 @@
 ;@param idx Websocket connection index.
 ;@param fd Client file descriptor.
 
-(define-c int ws_set_timer(int bool))
+(define-c int set_timer(int bool))
 
 (define-c void timer_init(void))
 

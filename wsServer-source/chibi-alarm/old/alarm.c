@@ -6,39 +6,42 @@
 #include "stdlib.h"
 #include "stdio.h"
 #include "unistd.h"
-#include "signal.h"
+#include <signal.h>
 #include <time.h>
 /*
 types: ()
 enums: ()
 */
+
 int timer_callback(void);
-int timer_init(void);
 
 static sexp ctx2;
 
-timer_t gTimerid;
 
-
-
-int timer_init(void)
+int set_timer(int usec,bool type)
 {
-  signal(SIGALRM, timer_callback);
-  timer_create (CLOCK_REALTIME, NULL, &gTimerid);
-
-}
-
-int timer_set(int sec,bool type)
-{
-  struct itimerval value;
+  struct itimerval new_timer;
   struct itimerval old_timer;
 
-  value.it_value.tv_sec = sec;
-  value.it_value.tv_usec = 0;
-  value.it_interval.tv_sec = 0;    
-  value.it_interval.tv_usec = 0;
-    
-  timer_settime (gTimerid, 0, &value, NULL);
+  new_timer.it_value.tv_sec = 0;
+  new_timer.it_value.tv_usec = 10000;
+  new_timer.it_interval.tv_sec = 0;    
+  new_timer.it_interval.tv_usec = 0;
+    	
+  if(usec ==0){
+    (void) setitimer(ITIMER_REAL, NULL, NULL);
+	  return 0;
+  } 
+
+  if (setitimer(ITIMER_REAL, &new_timer, NULL) == -1) {
+	    perror("error calling setitimer()");
+	    exit(1);
+  }
+  
+  if (signal(SIGALRM, timer_callback) == SIG_ERR) {
+    perror("Unable to catch SIGALRM");
+    exit(1);
+  }
 
   return 0;
 }
@@ -54,20 +57,14 @@ int timer_callback(void)
  sexp_gc_release1(ctx);   
 }
 
-sexp sexp_timer_init_stub (sexp ctx, sexp self, sexp_sint_t n) {
-  sexp res;
-  res = ((timer_init()), SEXP_VOID);
-  return res;
-}
-
-sexp sexp_timer_set_stub (sexp ctx, sexp self, sexp_sint_t n, sexp arg0, sexp arg1) {
+sexp sexp_set_timer_stub (sexp ctx, sexp self, sexp_sint_t n, sexp arg0, sexp arg1) {
   sexp res;
   if (! sexp_exact_integerp(arg0))
     return sexp_type_exception(ctx, self, SEXP_FIXNUM, arg0);
-  res = sexp_make_integer(ctx, timer_set
-(sexp_sint_value(arg0), sexp_truep(arg1)));
+  res = sexp_make_integer(ctx, set_timer(sexp_sint_value(arg0), sexp_truep(arg1)));
   return res;
 }
+
 sexp sexp_timer_callback_stub (sexp ctx, sexp self, sexp_sint_t n) {
   sexp res;
   res = sexp_make_integer(ctx, timer_callback());
@@ -80,25 +77,20 @@ sexp sexp_init_library (sexp ctx, sexp self, sexp_sint_t n, sexp env, const char
         && sexp_abi_compatible(ctx, abi, SEXP_ABI_IDENTIFIER)))
     return SEXP_ABI_ERROR;
   sexp_gc_preserve3(ctx, name, tmp, op);
-  op = sexp_define_foreign(ctx, env, "timer_init", 0, (sexp_proc1)sexp_timer_init_stub);
-  if (sexp_opcodep(op)) {
-    sexp_opcode_return_type(op) = SEXP_VOID;
-  }
-  op = sexp_define_foreign(ctx, env, "timer_set", 2, (sexp_proc1)sexp_timer_set_stub);
+  op = sexp_define_foreign(ctx, env, "set_timer", 2, (sexp_proc1)sexp_set_timer_stub);
   if (sexp_opcodep(op)) {
     sexp_opcode_return_type(op) = sexp_make_fixnum(SEXP_FIXNUM);
     sexp_opcode_arg1_type(op) = sexp_make_fixnum(SEXP_FIXNUM);
     sexp_opcode_arg2_type(op) = sexp_make_fixnum(SEXP_BOOLEAN);
   }
-
   op = sexp_define_foreign(ctx, env, "timer_callback", 0, sexp_timer_callback_stub);  
   if (sexp_opcodep(op)) {
     sexp_opcode_return_type(op) = sexp_make_fixnum(SEXP_FIXNUM);
   }
-  
   sexp_gc_release3(ctx);
   ctx2 = ctx;  
   sexp_preserve_object(ctx, ctx2);
+
   return SEXP_VOID;
 }
 

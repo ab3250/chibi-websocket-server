@@ -2,6 +2,7 @@
   (import
     (scheme base))
   (export  
-    set_timer
+    timer_init
+    timer_set
     )        	                
 (include-shared "alarm"))

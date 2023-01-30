@@ -14,7 +14,8 @@
 (define (timer_callback)
 (display "timer from scheme")
 (newline)
-(set_timer 30000 #t))
+(timer_set 1 #t)
+)
 
 ;functions
 (define (delay sec)
@@ -59,5 +60,6 @@
     (displayln (list 'closed fd)))
 ;;;;;;
 (define (main args)
-    (set_timer 10000 #t)
+    (timer_init)
+    (timer_set 3 #t)    
     (ws_start))
