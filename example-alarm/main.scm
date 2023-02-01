@@ -14,7 +14,7 @@
 (define (timer_callback)
 (display "timer from scheme")
 (newline)
-(timer_set 1 #t)
+;(timer_set 1 #t)
 )
 
 ;functions
@@ -61,5 +61,6 @@
 ;;;;;;
 (define (main args)
     (timer_init)
-    (timer_set 3 #t)    
+   ; (alarm 3)
+    ;(timer_set 3 #t)    
     (ws_start))
